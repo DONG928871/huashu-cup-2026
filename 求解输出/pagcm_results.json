@@ -1,0 +1,157 @@
+{
+  "parameters": {
+    "r0": 250.0,
+    "alpha": 0.5,
+    "L": 10000.0,
+    "MC_rounds": 200
+  },
+  "connectivity": {
+    "组1_场景A": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组1_场景B": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组2_场景A": {
+      "X": true,
+      "Y": false,
+      "Z": false
+    },
+    "组2_场景B": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组3_场景A": {
+      "X": true,
+      "Y": true,
+      "Z": true
+    },
+    "组3_场景B": {
+      "X": true,
+      "Y": true,
+      "Z": true
+    }
+  },
+  "GPNM_verify": {
+    "组1_场景A": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组1_场景B": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组2_场景A": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组2_场景B": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组3_场景A": {
+      "X": false,
+      "Y": true,
+      "Z": true
+    },
+    "组3_场景B": {
+      "X": true,
+      "Y": true,
+      "Z": true
+    }
+  },
+  "stats": {
+    "组1_场景A": {
+      "N": 12,
+      "n_components": 1,
+      "max_cluster": 12,
+      "min_cluster": 12,
+      "mean_cluster": 12.0,
+      "singletons": 0,
+      "n_edges": 15,
+      "r_eff_mean": 750.0,
+      "r_eff_std": 0.0
+    },
+    "组1_场景B": {
+      "N": 12,
+      "n_components": 3,
+      "max_cluster": 7,
+      "min_cluster": 1,
+      "mean_cluster": 4.0,
+      "singletons": 1,
+      "n_edges": 16,
+      "r_eff_mean": 697.9166666666666,
+      "r_eff_std": 172.74087449767708
+    },
+    "组2_场景A": {
+      "N": 49,
+      "n_components": 1,
+      "max_cluster": 49,
+      "min_cluster": 49,
+      "mean_cluster": 49.0,
+      "singletons": 0,
+      "n_edges": 321,
+      "r_eff_mean": 750.0,
+      "r_eff_std": 0.0
+    },
+    "组2_场景B": {
+      "N": 49,
+      "n_components": 1,
+      "max_cluster": 49,
+      "min_cluster": 49,
+      "mean_cluster": 49.0,
+      "singletons": 0,
+      "n_edges": 306,
+      "r_eff_mean": 750.0,
+      "r_eff_std": 0.0
+    },
+    "组3_场景A": {
+      "N": 535,
+      "n_components": 384,
+      "max_cluster": 30,
+      "min_cluster": 1,
+      "mean_cluster": 1.3932291666666667,
+      "singletons": 326,
+      "n_edges": 198,
+      "r_eff_mean": 269.4490084330888,
+      "r_eff_std": 67.43415190976629
+    },
+    "组3_场景B": {
+      "N": 535,
+      "n_components": 401,
+      "max_cluster": 19,
+      "min_cluster": 1,
+      "mean_cluster": 1.3341645885286784,
+      "singletons": 343,
+      "n_edges": 173,
+      "r_eff_mean": 269.69614103947623,
+      "r_eff_std": 65.62321811923614
+    }
+  },
+  "mc_probabilities": {
+    "组1_场景A": {
+      "X": 0.0,
+      "Y": 0.0,
+      "Z": 0.0
+    },
+    "组1_场景B": {
+      "X": 0.0,
+      "Y": 0.0,
+      "Z": 0.0
+    },
+    "组3_场景A": {
+      "X": 0.755,
+      "Y": 1.0,
+      "Z": 1.0
+    }
+  }
+}

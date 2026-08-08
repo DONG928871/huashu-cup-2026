@@ -1,0 +1,5 @@
+﻿dataset,N_original,orig_conn,n_connected_orig,target_directions,priority,N_min_search,N_max_search,N_critical_theory,L,r0,alpha,P_target,T0,gamma,T_min,lambda,M0,beta,sigma,n_restarts,K_conv,estimated_evaluations,estimated_total_time_min
+组1_场景A,12,"X=0,Y=0,Z=0",0,X+Y+Z,HIGH,664,13290,4430,10000.0,250.0,0.5,0.95,50.0,0.95,0.01,2.0,100,0.7,0.05,5,20,83000,6.6
+组1_场景B,12,"X=0,Y=0,Z=0",0,X+Y+Z,HIGH,664,13290,4430,10000.0,250.0,0.5,0.95,50.0,0.95,0.01,2.0,100,0.7,0.05,5,20,83000,6.6
+组2_场景A,49,"X=1,Y=0,Z=0",1,Y+Z,MEDIUM,664,13290,4430,10000.0,250.0,0.5,0.95,50.0,0.95,0.01,2.0,100,0.7,0.05,5,20,83000,27.1
+组2_场景B,49,"X=0,Y=0,Z=0",0,X+Y+Z,HIGH,664,13290,4430,10000.0,250.0,0.5,0.95,50.0,0.95,0.01,2.0,100,0.7,0.05,5,20,83000,27.1

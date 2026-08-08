@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Temp files
+*.tmp
+/tmp/
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+
+# Large PDF/excel originals (keep in repo for completeness, but exclude temp extracts)
+extract_data.ps1
+read_data.py
+
+# SSH keys and tunnel logs
+*.pem
+*.key

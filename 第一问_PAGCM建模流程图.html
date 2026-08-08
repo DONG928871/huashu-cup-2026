@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第一问 PAGCM 建模流程图</title>
+<style>
+:root {
+  --surface: #fcfcfb;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --muted: #898781;
+  --gridline: #e1e0d9;
+  --baseline: #c3c2b7;
+  /* Phase colors */
+  --phase-prep:      #2a78d6;  /* blue - 数据准备 */
+  --phase-prep-light: #e8f1fc;
+  --phase-model:     #eb6834;  /* orange - 模型构建 */
+  --phase-model-light: #fef0e9;
+  --phase-solve:     #1baf7a;  /* aqua - 求解迭代 */
+  --phase-solve-light: #e8f7f1;
+  --phase-verify:    #4a3aa7;  /* violet - 结果验证 */
+  --phase-verify-light: #eeecf8;
+  --phase-output:    #e34948;  /* red - 输出 */
+  --phase-output-light: #fdecec;
+  --phase-startend:  #52514e;
+
+  --box-radius: 10px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+  --arrow-color: #898781;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  background: #f9f9f7;
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 960px;
+  width: 100%;
+}
+
+/* Title */
+.title-block {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.title-block h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+.title-block .subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* Legend row */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* Flowchart */
+.flowchart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+/* Phase label */
+.phase-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+/* Module box */
+.module {
+  position: relative;
+  width: 520px;
+  padding: 18px 24px;
+  border-radius: var(--box-radius);
+  background: #ffffff;
+  border: 2px solid transparent;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.module:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.module .step-num {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.module .module-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+.module .module-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Module border colors by phase */
+.module.phase-prep    { border-color: var(--phase-prep); }
+.module.phase-model   { border-color: var(--phase-model); }
+.module.phase-solve   { border-color: var(--phase-solve); }
+.module.phase-verify  { border-color: var(--phase-verify); }
+.module.phase-output  { border-color: var(--phase-output); }
+.module.phase-startend { border-color: var(--phase-startend); background: #f5f5f3; }
+
+.module.phase-prep    .step-num { background: var(--phase-prep); }
+.module.phase-model   .step-num { background: var(--phase-model); }
+.module.phase-solve   .step-num { background: var(--phase-solve); }
+.module.phase-verify  .step-num { background: var(--phase-verify); }
+.module.phase-output  .step-num { background: var(--phase-output); }
+.module.phase-startend .step-num { background: var(--phase-startend); }
+
+/* Arrow between modules */
+.arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 0;
+}
+.arrow-line {
+  width: 2px;
+  height: 28px;
+  background: var(--arrow-color);
+  border-radius: 1px;
+}
+.arrow-head {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid var(--arrow-color);
+}
+
+/* Parallel branch container */
+.branch-row {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+.branch-row .module {
+  width: 248px;
+}
+
+/* Fork arrows */
+.fork-area {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  position: relative;
+}
+.fork-area .arrow-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Divider bar */
+.phase-divider {
+  width: 520px;
+  height: 1px;
+  background: var(--gridline);
+  margin: 6px 0 10px 0;
+  position: relative;
+}
+.phase-divider .phase-tag {
+  position: absolute;
+  left: 50%;
+  top: -9px;
+  transform: translateX(-50%);
+  background: #f9f9f7;
+  padding: 0 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+/* Data flow labels */
+.data-flow {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-style: italic;
+  text-align: center;
+  margin: 2px 0;
+}
+
+/* io boxes - smaller */
+.module.io-box {
+  width: 280px;
+  padding: 12px 20px;
+  border-radius: 20px;
+  background: var(--phase-startend);
+  border: none;
+}
+.module.io-box .step-num { background: rgba(255,255,255,0.25); }
+.module.io-box .module-title { color: #fff; font-size: 0.9rem; }
+.module.io-box .module-desc { color: rgba(255,255,255,0.8); }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Title -->
+  <div class="title-block">
+    <h1>第一问 · PAGCM 建模流程图</h1>
+    <div class="subtitle">周期边界自适应图连通判定模型 — 从场景抽象到结果验证</div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:#2a78d6"></span>数据准备</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#eb6834"></span>模型构建</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#1baf7a"></span>求解迭代</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#4a3aa7"></span>结果验证</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#e34948"></span>结果输出</div>
+  </div>
+
+  <!-- Flowchart -->
+  <div class="flowchart">
+
+    <!-- START -->
+    <div class="module io-box phase-startend">
+      <div class="step-num">▶</div>
+      <div class="module-title">开始：读取附件三维粒子坐标数据</div>
+      <div class="module-desc">输入 Excel 中微构体导电填料的 (X, Y, Z) 空间坐标</div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+    <div class="phase-divider"><span class="phase-tag">数 据 准 备</span></div>
+
+    <!-- Module 1 -->
+    <div class="module phase-prep">
+      <div class="step-num">1</div>
+      <div class="module-title">场景抽象：三维粒子 → 图节点映射</div>
+      <div class="module-desc">每颗导电填料粒子 → 图节点 V；粒子间接触/近邻关系 → 边 E<br>RVE 周期边界 → 环面拓扑约束</div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+    <!-- Module 2 -->
+    <div class="module phase-prep">
+      <div class="step-num">2</div>
+      <div class="module-title">变量定义：节点属性和边权函数</div>
+      <div class="module-desc">节点属性：坐标 pᵢ = (xᵢ, yᵢ, zᵢ)，等效半径 rᵢ<br>边权函数：dₜ(pᵢ, pⱼ) = min ‖pᵢ − pⱼ + kL‖（环面距离）</div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+    <div class="phase-divider"><span class="phase-tag">模 型 构 建</span></div>
+
+    <!-- Module 3 & 4 in parallel -->
+    <div class="branch-row">
+      <div class="module phase-model">
+        <div class="step-num">3</div>
+        <div class="module-title">KD-Tree 空间索引构建</div>
+        <div class="module-desc">3D KD-Tree 分区<br>O(N log N) 近邻检索加速<br>替代全局 O(N²) 距离计算</div>
+      </div>
+      <div class="module phase-model">
+        <div class="step-num">4</div>
+        <div class="module-title">自适应距离阈值计算</div>
+        <div class="module-desc">密度感知等效半径：<br>rᵉᶠᶠ = r₀ · (1 + α · ρ_local/ρ̄)<br>sparse → 放宽，dense → 收紧</div>
+      </div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+    <!-- Module 5 -->
+    <div class="module phase-model">
+      <div class="step-num">5</div>
+      <div class="module-title">周期边界拓扑嵌入：跨边界边生成</div>
+      <div class="module-desc">对距边界 &lt; rᵉᶠᶠ 的粒子，在周期方向构建跨边界虚拟边<br>边标签存储周期偏移矢量 k ∈ ℤ³，实现环面上的图结构</div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+    <div class="phase-divider"><span class="phase-tag">求 解 迭 代</span></div>
+
+    <!-- Module 6 -->
+    <div class="module phase-solve">
+      <div class="step-num">6</div>
+      <div class="module-title">并查集聚类：周期感知的连通分量识别</div>
+      <div class="module-desc">Union-Find + 路径压缩 + 按秩合并<br>连接判据：环面距离 dₜ(pᵢ, pⱼ) ≤ rᵢᵉᶠᶠ + rⱼᵉᶠᶠ<br>自动合并跨周期边界的等价类</div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+    <!-- Module 7 -->
+    <div class="module phase-solve">
+      <div class="step-num">7</div>
+      <div class="module-title">方向性连通判定：贯穿边界检测</div>
+      <div class="module-desc">X / Y / Z 方向分别判定：是否存在一个连通分量<br>同时包含「源边界粒子集」和「目标边界粒子集」？<br>Find(源粒子) = Find(目标粒子) → 该方向连通 ✓</div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+    <div class="phase-divider"><span class="phase-tag">结 果 验 证</span></div>
+
+    <!-- Module 8 -->
+    <div class="module phase-verify">
+      <div class="step-num">8</div>
+      <div class="module-title">结果验证与敏感性分析</div>
+      <div class="module-desc">① 与 GPNM 暴力枚举交叉验证 ② 蒙特卡洛位置扰动（±δ）→ 连通概率<br>③ 参数 α 扫描 → 稳定性评估 ④ 连通分量演化曲线 vs 填充率</div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+    <!-- END -->
+    <div class="module io-box phase-startend">
+      <div class="step-num">✓</div>
+      <div class="module-title">输出：各方向连通性判定 + 最短导通路径 + 最大簇统计</div>
+      <div class="module-desc">二值结果（通 / 断）+ 可视化的逾渗路径粒子链 + 连通分量分布</div>
+    </div>
+
+  </div><!-- /flowchart -->
+
+  <!-- Footer note -->
+  <div style="text-align:center;margin-top:36px;font-size:0.75rem;color:var(--muted);">
+    箭头表示数据/控制流方向 &nbsp;|&nbsp; 并行模块 (3, 4) 可同时构建 &nbsp;|&nbsp; 虚线分隔代表建模阶段边界
+  </div>
+
+</div><!-- /container -->
+
+</body>
+</html>

@@ -1,0 +1,209 @@
+{
+  "metadata": {
+    "model": "MESA-PAGCM",
+    "innovation": "跨领域模型迁移创新 (信息论MaxEnt + 统计物理SA → 材料优化)",
+    "phi_c": 0.29,
+    "phi_c_source": "Scher & Zallen (1970), J. Chem. Phys. 53, 3759",
+    "date": "2026-08-08 14:52:53"
+  },
+  "mesa_parameters": [
+    {
+      "name": "T0",
+      "value": 50.0,
+      "range": "[10, 100]",
+      "unit": "无量纲",
+      "type": "待校准参数（算法类）",
+      "basis": "初始温度需足够高以保证初始接受率约0.8。T0=50时exp(-Delta_f_typical/T0)约0.6-0.9，保证充分探索。参考Kirkpatrick(1983)推荐值。"
+    },
+    {
+      "name": "gamma",
+      "value": 0.95,
+      "range": "[0.85, 0.99]",
+      "unit": "无量纲",
+      "type": "待校准参数（算法类）",
+      "basis": "冷却因子在理论保证(gamma→1)与计算可行性间平衡。gamma=0.95时从T0=50降至T_min=0.01需ln(0.01/50)/ln(0.95)≈166轮。参考Nourani & Andresen(1998)对冷却策略的比较研究。"
+    },
+    {
+      "name": "T_min",
+      "value": 0.01,
+      "range": "[0.001, 0.1]",
+      "unit": "无量纲",
+      "type": "已知参数（算法类）",
+      "basis": "终止温度设为初始温度的1/5000。此时Metropolis接受概率exp(-1/0.01)≈3.7e-44≈0，搜索已充分\"冻结\"，继续降温无意义。"
+    },
+    {
+      "name": "lambda",
+      "value": 2.0,
+      "range": "[0.5, 5.0]",
+      "unit": "无量纲",
+      "type": "待校准参数（目标类）",
+      "basis": "罚函数权重。lambda=2.0使\"连通不满足\"的惩罚是\"多用1个粒子\"权重的2倍——保证优化器优先满足导电约束再考虑成本最小化。过大(>5)→过度保守浪费材料；过小(<0.5)→可能产出连通性不足的解。"
+    },
+    {
+      "name": "M0",
+      "value": 100,
+      "range": "[50, 500]",
+      "unit": "次/温度",
+      "type": "已知参数（算法类）",
+      "basis": "每个温度下100次扰动×166轮降温=16,600次PAGCM评估。Q1中每次PAGCM评估约0.2s(N=535)，总计算时间约55分钟——在比赛3天时间窗口内可承受。"
+    },
+    {
+      "name": "P_target",
+      "value": 0.95,
+      "range": "[0.80, 0.99]",
+      "unit": "无量纲",
+      "type": "场景假设参数（工程类）",
+      "basis": "工程导电可靠性要求≥95%。依据：电子封装行业对导电复合材料的导通率质控标准IPC-4101通常要求≥95%；航空航天应用可能要求≥99%。取中间值0.95兼顾可靠性与经济性。"
+    },
+    {
+      "name": "beta",
+      "value": 0.7,
+      "range": "[0.50, 0.90]",
+      "unit": "无量纲",
+      "type": "已知参数（初始化类）",
+      "basis": "最大熵初始化中的最小间距因子。beta=0.7在\"均匀性\"(高beta→严格排斥→均匀)与\"随机性\"(低beta→允许团簇→可能形成各向异性逾渗)之间平衡。参考泊松盘采样的标准参数范围。"
+    },
+    {
+      "name": "sigma",
+      "value": 0.05,
+      "range": "[0.01, 0.15]",
+      "unit": "L的分数",
+      "type": "已知参数（扰动类）",
+      "basis": "粒子位移扰动标准差sigma=0.05L=500单位。与粒子直径(2×250=500)相当——每次扰动移动约1个粒子直径的距离。过小→搜索效率低；过大→随机跳跃，失去局部精炼能力。"
+    },
+    {
+      "name": "n_restarts",
+      "value": 5,
+      "range": "[3, 10]",
+      "unit": "次",
+      "type": "已知参数（验证类）",
+      "basis": "5次独立SA运行（不同随机种子）。3次以上可进行统计一致性检验（若≥3/5收敛到相同解→高置信全局最优）。10次在计算时间上不可承受(5×55min≈4.6h)。"
+    },
+    {
+      "name": "K_conv",
+      "value": 20,
+      "range": "[10, 50]",
+      "unit": "轮",
+      "type": "已知参数（收敛类）",
+      "basis": "连续20轮降温后最优目标函数无改善则判定收敛。166轮总量中20轮≈12%的\"耐心期\"——在过早停止(错过更优解)与过度计算之间合理平衡。"
+    }
+  ],
+  "optimization_targets": [
+    {
+      "dataset": "组1_场景A",
+      "N_original": 12,
+      "orig_conn": "X=0,Y=0,Z=0",
+      "n_connected_orig": 0,
+      "target_directions": "X+Y+Z",
+      "priority": "HIGH",
+      "N_min_search": 664,
+      "N_max_search": 13290,
+      "N_critical_theory": 4430,
+      "L": 10000.0,
+      "r0": 250.0,
+      "alpha": 0.5,
+      "P_target": 0.95,
+      "T0": 50.0,
+      "gamma": 0.95,
+      "T_min": 0.01,
+      "lambda": 2.0,
+      "M0": 100,
+      "beta": 0.7,
+      "sigma": 0.05,
+      "n_restarts": 5,
+      "K_conv": 20,
+      "estimated_evaluations": 83000,
+      "estimated_total_time_min": 6.6
+    },
+    {
+      "dataset": "组1_场景B",
+      "N_original": 12,
+      "orig_conn": "X=0,Y=0,Z=0",
+      "n_connected_orig": 0,
+      "target_directions": "X+Y+Z",
+      "priority": "HIGH",
+      "N_min_search": 664,
+      "N_max_search": 13290,
+      "N_critical_theory": 4430,
+      "L": 10000.0,
+      "r0": 250.0,
+      "alpha": 0.5,
+      "P_target": 0.95,
+      "T0": 50.0,
+      "gamma": 0.95,
+      "T_min": 0.01,
+      "lambda": 2.0,
+      "M0": 100,
+      "beta": 0.7,
+      "sigma": 0.05,
+      "n_restarts": 5,
+      "K_conv": 20,
+      "estimated_evaluations": 83000,
+      "estimated_total_time_min": 6.6
+    },
+    {
+      "dataset": "组2_场景A",
+      "N_original": 49,
+      "orig_conn": "X=1,Y=0,Z=0",
+      "n_connected_orig": 1,
+      "target_directions": "Y+Z",
+      "priority": "MEDIUM",
+      "N_min_search": 664,
+      "N_max_search": 13290,
+      "N_critical_theory": 4430,
+      "L": 10000.0,
+      "r0": 250.0,
+      "alpha": 0.5,
+      "P_target": 0.95,
+      "T0": 50.0,
+      "gamma": 0.95,
+      "T_min": 0.01,
+      "lambda": 2.0,
+      "M0": 100,
+      "beta": 0.7,
+      "sigma": 0.05,
+      "n_restarts": 5,
+      "K_conv": 20,
+      "estimated_evaluations": 83000,
+      "estimated_total_time_min": 27.1
+    },
+    {
+      "dataset": "组2_场景B",
+      "N_original": 49,
+      "orig_conn": "X=0,Y=0,Z=0",
+      "n_connected_orig": 0,
+      "target_directions": "X+Y+Z",
+      "priority": "HIGH",
+      "N_min_search": 664,
+      "N_max_search": 13290,
+      "N_critical_theory": 4430,
+      "L": 10000.0,
+      "r0": 250.0,
+      "alpha": 0.5,
+      "P_target": 0.95,
+      "T0": 50.0,
+      "gamma": 0.95,
+      "T_min": 0.01,
+      "lambda": 2.0,
+      "M0": 100,
+      "beta": 0.7,
+      "sigma": 0.05,
+      "n_restarts": 5,
+      "K_conv": 20,
+      "estimated_evaluations": 83000,
+      "estimated_total_time_min": 27.1
+    }
+  ],
+  "benchmark_reference": [
+    {
+      "name": "组3_场景A",
+      "N": 535,
+      "n_connected": 3
+    },
+    {
+      "name": "组3_场景B",
+      "N": 535,
+      "n_connected": 3
+    }
+  ]
+}
