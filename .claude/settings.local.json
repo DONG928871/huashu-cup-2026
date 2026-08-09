@@ -58,7 +58,8 @@
       "Bash(powershell -Command \"\ntry {\n    \\\\$word = New-Object -ComObject Word.Application\n    \\\\$word.Visible = \\\\$false\n    Write-Output 'Word COM available'\n    \\\\$word.Quit\\(\\)\n} catch {\n    Write-Output 'Word COM NOT available'\n}\n\" 2>&1)",
       "Bash(powershell -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\31670\\\\OneDrive\\\\Desktop\\\\华数杯数学建模比赛\\\\generate_docx.ps1\" 2>&1)",
       "Bash(pip show *)",
-      "Bash(powershell -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\31670\\\\OneDrive\\\\Desktop\\\\华数杯数学建模比赛\\\\gen_q1.ps1\" 2>&1)"
+      "Bash(powershell -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\31670\\\\OneDrive\\\\Desktop\\\\华数杯数学建模比赛\\\\gen_q1.ps1\" 2>&1)",
+      "Bash(powershell -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\31670\\\\OneDrive\\\\Desktop\\\\华数杯数学建模比赛\\\\embed_images.ps1\" 2>&1)"
     ]
   }
 }
