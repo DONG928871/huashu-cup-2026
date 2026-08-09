@@ -1,0 +1,27 @@
+A题 代码文件清单
+==================================================
+
+q1_solve.py / q1_solve_v2.py / q1_solve_v3.py
+  问题一 PAGCM求解器 (原始/教学/创新)
+
+q2_solve.py / q2_solve_v2.py / q2_solve_v3.py
+  问题二 MESA-PAGCM求解器
+
+q3_solve.py / q3_solve_v2.py / q3_solve_v3.py
+  问题三 MS-PAGCM求解器
+
+q4_solve.py / q4_solve_v2.py / q4_solve_v3.py
+  问题四 MOEA/D-PAGCM求解器
+
+preprocess.py
+  数据预处理脚本
+
+q2_preprocess.py / q3_q4_preprocess.py
+  Q2/Q3+Q4预处理
+
+gen_q1_images.py ~ gen_q4_images.py
+  图表生成脚本
+
+gen_q1_docx_final.py ~ gen_q4_docx.py
+  .docx报告生成脚本
+
