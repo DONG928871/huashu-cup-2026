@@ -1,0 +1,77 @@
+{
+  "parameters": {
+    "r0": 250.0,
+    "alpha": 0.5,
+    "L": 10000.0,
+    "v2_nonlinear": true
+  },
+  "connectivity": {
+    "组1_场景A": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组1_场景B": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组2_场景A": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组2_场景B": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组3_场景A": {
+      "X": false,
+      "Y": true,
+      "Z": true
+    },
+    "组3_场景B": {
+      "X": true,
+      "Y": true,
+      "Z": true
+    }
+  },
+  "GPNM_verify": {
+    "组1_场景A": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组1_场景B": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组2_场景A": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组2_场景B": {
+      "X": false,
+      "Y": false,
+      "Z": false
+    },
+    "组3_场景A": {
+      "X": false,
+      "Y": true,
+      "Z": true
+    },
+    "组3_场景B": {
+      "X": true,
+      "Y": true,
+      "Z": true
+    }
+  },
+  "cross_validation": {
+    "total": 18,
+    "matches": 18,
+    "match_rate": "100.0%"
+  }
+}
