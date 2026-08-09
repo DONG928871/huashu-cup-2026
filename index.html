@@ -58,8 +58,10 @@ body{font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif
   <h1>A题 微构体中填充导电介质的仿真优化</h1>
   <div class="sub">华数杯数学建模比赛 · 完整成果展示</div>
   <div class="tags">
-    <span class="tag tag-pagcm">第一问 PAGCM</span>
-    <span class="tag tag-mesa">第二问 MESA-PAGCM</span>
+    <span class="tag tag-pagcm">Q1 PAGCM</span>
+    <span class="tag tag-mesa">Q2 MESA-PAGCM</span>
+    <span class="tag" style="background:var(--c-teal);">Q3 MS-PAGCM</span>
+    <span class="tag" style="background:var(--c-red);">Q4 MOEA/D-PAGCM</span>
   </div>
 </div>
 
@@ -154,6 +156,49 @@ body{font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif
       <tr><td>组1_场景B</td><td>12</td><td>0/3</td><td>X+Y+Z</td><td style="color:#e34948;font-weight:700;">HIGH</td><td>[664, 13290]</td><td>6.6 min</td></tr>
       <tr><td>组2_场景A</td><td>49</td><td>1/3 (仅X)</td><td>Y+Z</td><td style="color:#eb6834;">MEDIUM</td><td>[664, 13290]</td><td>27.1 min</td></tr>
       <tr><td>组2_场景B</td><td>49</td><td>0/3</td><td>X+Y+Z</td><td style="color:#e34948;font-weight:700;">HIGH</td><td>[664, 13290]</td><td>27.1 min</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ====== Q3 Q4 SECTION ====== -->
+<div class="section-title" style="border-left-color:var(--c-teal);">第三问 · MS-PAGCM 多尺度敏感性分析 <span style="font-size:0.75rem;color:var(--muted);font-weight:400;">（方向①：算法改进创新）</span></div>
+
+<div class="cards">
+  <a href="第三四问完整建模文档.html" class="card" style="border-left:4px solid var(--c-teal);">
+    <div class="icon">📄</div><h3>Q3+Q4 完整建模文档（四模块）</h3>
+    <p>Q3: Sobol敏感性 | Q4: MOEA/D多目标优化 | 各含变量表+假设+公式推导+检验+分析</p>
+    <span class="badge" style="background:#e8f8f9;color:var(--c-teal);">核心文档</span>
+  </a>
+  <a href="第三问_MS-PAGCM建模流程图.html" class="card" style="border-left:4px solid var(--c-teal);">
+    <div class="icon">🔀</div><h3>Q3 MS-PAGCM 流程图</h3><p>7步核心模块，四色阶段分组，Sobol采样→多分散PAGCM→方差分解→三尺度排序</p>
+    <span class="badge badge-flow">流程图</span>
+  </a>
+  <a href="第四问_MOEA-D-PAGCM建模流程图.html" class="card" style="border-left:4px solid var(--c-red);">
+    <div class="icon">🔀</div><h3>Q4 MOEA/D-PAGCM 流程图</h3><p>7步+迭代循环，三模型融合：PAGCM评估→MOEA/D进化→TOPSIS推荐</p>
+    <span class="badge badge-flow">流程图</span>
+  </a>
+  <a href="第三四问输出/q3_q4_results_viz.html" class="card" style="border-left:4px solid var(--c-teal);">
+    <div class="icon">📊</div><h3>Q3+Q4 求解结果可视化（5张图）</h3>
+    <p>Sobol指数对比 | 交互效应+三尺度 | OAT vs Sobol | Pareto前沿 | TOPSIS雷达 | 收敛曲线</p>
+    <span class="badge badge-chart">图表</span>
+  </a>
+  <a href="第三四问输出/q3_q4_preprocessing_viz.html" class="card" style="border-left:4px solid var(--c-teal);">
+    <div class="icon">🔍</div><h3>Q3+Q4 预处理可视化（4张图）</h3>
+    <p>参数空间全景 | Sobol二维投影 | MOEA/D参数表 | 四目标映射关系</p>
+    <span class="badge badge-chart">数据探索</span>
+  </a>
+</div>
+
+<!-- Q3 Q4 Quick Results -->
+<div class="results-preview">
+  <h2>📌 第三、四问关键结果</h2>
+  <table>
+    <thead><tr><th>问题</th><th>模型</th><th>核心结果</th><th>关键数值</th></tr></thead>
+    <tbody>
+      <tr><td><b>Q3</b></td><td>MS-PAGCM</td><td>Sobol全局敏感性排序</td><td>μ_r(1.0) > CV_r(0.96) > s(0.93) > α(0.90) > φ(0.88) > strategy(0.44)</td></tr>
+      <tr><td><b>Q3</b></td><td>MS-PAGCM</td><td>OAT vs Sobol对比</td><td>OAT低估μ_r/CV_r/α的影响→验证全局方法的必要性</td></tr>
+      <tr><td><b>Q4</b></td><td>MOEA/D-PAGCM</td><td>Pareto前沿</td><td>24非支配解，全可行，TOPSIS推荐N=206, P_conn=90.86%</td></tr>
+      <tr><td><b>Q4</b></td><td>MOEA/D-PAGCM</td><td>四目标平衡</td><td>φ=2.2%, E/E₀=95.7%, 棒状(s=1.94)+链状排列最优</td></tr>
     </tbody>
   </table>
 </div>
