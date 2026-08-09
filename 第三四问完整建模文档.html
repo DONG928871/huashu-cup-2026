@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q3 Q4 完整建模文档</title>
+<style>
+:root{--c-blue:#2a78d6;--c-orange:#eb6834;--c-aqua:#1baf7a;--c-violet:#4a3aa7;--c-red:#e34948;--c-yellow:#eda100;--c-teal:#0d7377;--surface:#fcfcfb;--text:#0b0b0b;--text2:#52514e;--muted:#898781;--border:#e1e0d9;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:#f9f9f7;color:var(--text);line-height:1.85;}
+.container{max-width:1100px;margin:0 auto;padding:30px 20px;}
+h1{font-size:1.6rem;font-weight:800;text-align:center;margin:20px 0 4px;}
+h2{font-size:1.2rem;font-weight:700;margin:36px 0 16px;padding:8px 16px;border-left:4px solid var(--c-teal);background:#fff;border-radius:0 8px 8px 0;}
+h2.q4{border-left-color:var(--c-red);}
+h3{font-size:1rem;font-weight:700;margin:24px 0 10px;color:var(--c-orange);}
+h4{font-size:0.9rem;font-weight:600;margin:16px 0 8px;}
+.table-wrap{overflow-x:auto;margin:12px 0;}
+table{width:100%;border-collapse:collapse;font-size:0.84rem;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+th{background:#f5f5f3;padding:8px 12px;text-align:left;font-weight:700;border-bottom:2px solid var(--border);}
+td{padding:8px 12px;border-bottom:1px solid var(--border);}
+.caption{font-size:0.78rem;color:var(--text2);text-align:center;margin:6px 0 16px;font-style:italic;}
+.formula{background:#fff;border-left:3px solid var(--c-teal);padding:10px 16px;margin:8px 0;font-family:'Courier New',monospace;font-size:0.88rem;overflow-x:auto;}
+.formula.q4{border-left-color:var(--c-red);}
+.formula .eq-num{float:right;color:var(--muted);font-size:0.8rem;}
+.assumption{background:#fff;border-radius:8px;padding:14px 18px;margin:8px 0;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+.assumption .as-num{display:inline-block;width:24px;height:24px;line-height:24px;border-radius:50%;color:#fff;text-align:center;font-weight:700;font-size:0.8rem;margin-right:8px;}
+.assumption .as-num.q3{background:var(--c-teal);}
+.assumption .as-num.q4{background:var(--c-red);}
+.assumption .as-content{font-weight:600;}
+.assumption .as-basis{color:var(--text2);font-size:0.82rem;margin-top:4px;}
+.assumption .as-impact{color:var(--c-orange);font-size:0.82rem;margin-top:2px;}
+.info-box{background:#fff;border-radius:8px;padding:16px 20px;margin:12px 0;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+.innov-box{background:linear-gradient(135deg,#e8f8f9,#fcfcfb);border-radius:8px;padding:16px 20px;margin:12px 0;border:2px solid var(--c-teal);}
+.innov-box.q4{background:linear-gradient(135deg,#fdecec,#fcfcfb);border:2px solid var(--c-red);}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>A题 第三、四问 完整建模文档</h1>
+<p style="text-align:center;color:var(--text2);font-size:0.9rem;">
+第三问 MS-PAGCM 多尺度敏感性分析模型 | 第四问 MOEA/D-PAGCM 多目标工程设计模型
+</p>
+
+<!-- ============================================================ -->
+<!-- Q3 MODEL -->
+<!-- ============================================================ -->
+<h2>第三问 · MS-PAGCM 多尺度周期自适应图连通敏感性分析模型</h2>
+<div class="innov-box">
+<p style="text-align:center;font-weight:700;font-size:1.05rem;">创新方向选择：① 算法改进创新</p>
+<p style="text-align:center;font-size:0.85rem;color:var(--text2);">在PAGCM核心算法上进行三层架构升级：多分散性支持 + Sobol'全局敏感性 + 分尺度分析</p>
+</div>
+
+<h3>一、核心原理（通俗解读）</h3>
+<p><b>一句话：</b>把"单一粒径、均匀分布"的PAGCM，升级成能同时处理"大小不一、形状各异、排布多样"的多尺度版本，然后用数学方法精确量化每个因素对导电性的影响程度。</p>
+
+<p><b>场景化解读：</b>第一问和第二问都假设所有填料粒子是"一样大的完美球体"。但真实的导电填料——比如炭黑——有的粒径20nm，有的200nm，形状也不全是球形（片状石墨烯、棒状碳纳米管）。第三问要回答的问题是：<b>"粒径分布的宽窄、粒子形状的差异、空间排布的策略——这些因素到底哪个对导电性影响最大？影响有多大？"</b></p>
+
+<p>MS-PAGCM对原始PAGCM做了<b>三层算法改进</b>：</p>
+<ol>
+<li><b>第一层——多分散性扩展：</b>将单一r₀替换为粒径分布P(r)，每个粒子从分布中独立采样，等效半径公式从rᵢᵉᶠᶠ = f(r₀, ρ_local)升级为rᵢᵉᶠᶠ = f(rᵢ, ρ_local, sᵢ)，其中sᵢ为粒子形状因子（球=1，棒>1，片<1）。</li>
+<li><b>第二层——Sobol'全局敏感性分析：</b>不满足于"一次变一个参数"的局部方法，而是用基于方差的Sobol'分解将所有参数的协同效应也考虑进来，量化每个参数对P_conn方差的独立贡献（一阶指数Sᵢ）和总贡献（全阶指数S_Tᵢ）。</li>
+<li><b>第三层——分尺度分析架构：</b>将导电网络分为三个空间尺度分别分析——微观(单粒子尺度，粒径分布)→介观(团簇尺度，局部排列)→宏观(RVE尺度，全局连通)，每个尺度对应不同的PAGCM参数。</li>
+</ol>
+
+<h3>二、场景适配性</h3>
+<div class="table-wrap">
+<table><caption>表3-1 MS-PAGCM与第三问场景适配</caption>
+<thead><tr><th>适配维度</th><th>第三问要求/约束</th><th>MS-PAGCM匹配设计</th></tr></thead>
+<tbody>
+<tr><td><b>多参数分析</b></td><td>需同时考虑粒径分布、形状因子、排布策略等多个参数</td><td>Sobol'方法天然支持多参数联合敏感性分析，且能分离独立贡献和交互贡献</td></tr>
+<tr><td><b>量化影响程度</b></td><td>需给出各因素对导电性的量化影响排序</td><td>一阶Sᵢ和全阶S_Tᵢ指数直接给出影响百分比，可排序</td></tr>
+<tr><td><b>非均匀体系</b></td><td>真实填料非均匀(多分散)，不再是Q1/Q2的等径假设</td><td>从单一半径r₀升级为粒径分布P(r)，粒子独立采样</td></tr>
+<tr><td><b>计算可行性</b></td><td>敏感性分析需大量重复评估，不能太慢</td><td>Sobol'序列用准蒙特卡洛采样，样本效率比纯随机高10倍；单次评估复用PAGCM的O(N log N)</td></tr>
+<tr><td><b>物理可解释性</b></td><td>结果需要能指导实际填料选择</td><td>三尺度分析架构(微观/介观/宏观)直接将敏感性结果映射到工程决策</td></tr>
+</tbody></table></div>
+
+<h3>三、真实创新点——与传统方法差异</h3>
+<div class="table-wrap">
+<table><thead><tr><th>维度</th><th>传统敏感性分析(OAT一次一变法)</th><th>MS-PAGCM (Sobol'+多尺度)</th><th>创新提升</th></tr></thead>
+<tbody>
+<tr><td><b>交互效应</b></td><td>忽略参数间的交互作用</td><td>Sobol'全阶指数S_Tᵢ包含了所有交互效应</td><td>可检测"粒径×排布"的协同或拮抗效应</td></tr>
+<tr><td><b>采样效率</b></td><td>均匀网格采样，参数多时维数灾难</td><td>Sobol'低差异序列(LPτ)，O(N·log^s N)收敛</td><td>6参数分析从10⁶次降至~10⁴次评估</td></tr>
+<tr><td><b>粒度建模</b></td><td>无，统一处理所有参数</td><td>三尺度分层：微观→介观→宏观各自分析</td><td>结果直接可解读为"换粒径"vs"调排布"vs"增加填料量"</td></tr>
+<tr><td><b>形状因子</b></td><td>仅球形假设</td><td>形状因子sᵢ等效修改粒子作用截面积</td><td>可评估碳管/石墨烯替代球形颗粒的效益</td></tr>
+</tbody></table></div>
+
+<h3>四、模型局限性 + 规避方案</h3>
+<div class="table-wrap">
+<table><thead><tr><th>局限</th><th>描述</th><th>规避方案</th></tr></thead>
+<tbody>
+<tr><td><b>L1: 形状因子的线性等效</b></td><td>sᵢ因子对非球形粒子的等效连接面积用线性缩放，真实情况涉及取向分布</td><td>引入取向分布函数ODF(θ,φ)并MC采样取向；检验sᵢ±30%对结论的影响</td></tr>
+<tr><td><b>L2: Sobol'指数收敛</b></td><td>小样本下Sobol'指数估计有偏（低估交互项）</td><td>用bootstrap置信区间量化估计的不确定性；N≥2000保证S_Tᵢ标准误<0.02</td></tr>
+<tr><td><b>L3: 尺度分离的假设</b></td><td>三尺度之间并非完全独立——介观团簇形态受微观粒径分布的影响</td><td>在Sobol'分析中保留跨尺度交叉项，并通过S_Tᵢ−Sᵢ量化交互贡献</td></tr>
+</tbody></table></div>
+
+<h3>五、建模核心过程（六阶段）</h3>
+<div class="info-box">
+<p><b>阶段一·场景抽象：</b>"导电逾渗敏感性分析"→"非线性黑箱函数的多参数方差分解问题"。目标：将P_conn = h(r₀, σ_r, s, α, φ, strategy)的方差分解为各参数的独立贡献+交互贡献。</p>
+<p><b>阶段二·变量定义：</b>输入参数向量θ=[μ_r(平均粒径), CV_r(粒径变异系数), s(形状因子), α(PAGCM自适应系数), φ(填充率), strategy(排布策略编码)]。输出：Sᵢ(一阶指数)和S_Tᵢ(全阶指数)各6个。</p>
+<p><b>阶段三·模型构建：</b>① 用Sobol'低差异序列在6维超立方[0,1]⁶中采样N_s=2000个样本点；② 每个样本点映射到实际参数空间；③ N个粒子从P(r; μ_r, CV_r)采样半径+sᵢ修正等效半径；④ 按strategy排布粒子(随机/链状/层状/MaxEnt)；⑤ 运行PAGCM评估P_conn；⑥ 基于2000次评估结果计算Sobol'指数。</p>
+<p><b>阶段四·数据适配：</b>以Q1-Q2已处理的6组数据集为基础，叠加参数扰动生成2000组虚拟数据集。参数范围设定：μ_r∈[100,500], CV_r∈[0,0.5], s∈[0.5,2.0], α∈[0,2], φ∈[0.001,0.05], strategy∈{random, chain, layered, MaxEnt}。</p>
+<p><b>阶段五·求解迭代：</b>Sobol'序列采样→参数映射→粒子生成→PAGCM评估→方差分解→指数计算。核心公式：Sᵢ = V_{θᵢ}[E(P_conn|θᵢ)] / V[P_conn]，S_Tᵢ = 1 − V[E(P_conn|θ_{~i})] / V[P_conn]。bootstrap重采样1000次计算95%置信区间。</p>
+<p><b>阶段六·结果验证：</b>① S_Tᵢ之和应≥1（交互项导致超可加性）；② bootstrap区间不跨0→参数显著；③ 与OAT局部敏感性结果趋势一致但数值不同→验证了全局方法的必要性；④ 三尺度结果在物理上应自洽。</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- Q4 MODEL -->
+<!-- ============================================================ -->
+<h2 class="q4">第四问 · MOEA/D-PAGCM 多目标进化分解周期自适应图连通工程设计模型</h2>
+<div class="innov-box q4">
+<p style="text-align:center;font-weight:700;font-size:1.05rem;">创新方向选择：③ 多模型融合组合创新</p>
+<p style="text-align:center;font-size:0.85rem;color:var(--text2);">PAGCM(物理评估) + MOEA/D(多目标进化) + TOPSIS(决策优选) + 帕累托前沿可视化</p>
+</div>
+
+<h3>一、核心原理（通俗解读）</h3>
+<p><b>一句话：</b>用进化算法自动进化出"既导电好、又省钱、还轻便、还结实"的填料配方，并给出一个让工程师可以直观选择的"菜单"。</p>
+
+<p><b>场景化解读：</b>第二问解决了"最少用多少填料能导电"。但工程中不止看导电性——还要看成本（填料越少越便宜）、重量（航空航天要求轻量化）、力学强度（填料太多可能降低基体韧性）。第四问就是<b>同时优化这四个互相矛盾的目标</b>。</p>
+
+<p>这就像买车：你不能只看速度（导电性），还要看价格（成本）、油耗（重量）、安全性（力学）。所有指标不能同时最优——你要的是一个"在预算内跑得最快"的车。MOEA/D-PAGCM做的事就是<b>自动生成一堆"帕累托最优"方案</b>（每个方案都在某一方面的代价下做到了另一方面的最优），然后让工程师根据实际需求挑选。</p>
+
+<p>三个融合组件：</p>
+<ol>
+<li><b>PAGCM（物理引擎）：</b>复用Q1模型，评估任意填料配方的导电性P_conn。</li>
+<li><b>MOEA/D（进化搜索）：</b>将多目标问题分解为N个标量子问题（切比雪夫聚合），每个子问题用差分进化+邻域协同独立求解，最终汇集成完整的帕累托前沿。</li>
+<li><b>TOPSIS（决策优选）：</b>从帕累托前沿中，用熵权法客观赋权+TOPSIS排序，自动推荐一个"综合最优"的工程方案。</li>
+</ol>
+
+<h3>二、场景适配性</h3>
+<div class="table-wrap">
+<table><caption>表4-1 MOEA/D-PAGCM与第四问场景适配</caption>
+<thead><tr><th>适配维度</th><th>第四问要求/约束</th><th>MOEA/D-PAGCM匹配设计</th></tr></thead>
+<tbody>
+<tr><td><b>多目标冲突</b></td><td>导电性⇅成本, 填料量⇅重量, 填料量⇅力学</td><td>MOEA/D天然处理多目标优化，输出帕累托前沿而非单一解</td></tr>
+<tr><td><b>离散+连续混合变量</b></td><td>粒子数N(离散)、位置(连续)、粒径分布(连续)</td><td>差分进化算子同时支持连续变异(粒子位置)和离散变异(增删粒子)</td></tr>
+<tr><td><b>无梯度黑箱</b></td><td>f₁=1−P_conn, f₂=N/N_max, f₃=φ, f₄=1−E/E₀均无解析梯度</td><td>进化算法不需要梯度，仅需函数值评估</td></tr>
+<tr><td><b>决策支持</b></td><td>需给出可操作的工程建议</td><td>TOPSIS+熵权法从帕累托前沿中自动推荐最优折中方案</td></tr>
+<tr><td><b>与Q1-Q2的连贯性</b></td><td>Q4是Q1-Q3的自然延伸</td><td>PAGCM作为统一评估核心贯穿四问，形成完整方法链</td></tr>
+</tbody></table></div>
+
+<h3>三、真实创新点——与传统方法差异</h3>
+<div class="table-wrap">
+<table><thead><tr><th>维度</th><th>传统多目标方法(加权求和/ε约束)</th><th>MOEA/D-PAGCM</th><th>创新提升</th></tr></thead>
+<tbody>
+<tr><td><b>权重设定</b></td><td>需人为设定权重，主观性强</td><td>MOEA/D均匀分解权重向量，覆盖面广且客观；最终用熵权法从数据中提取权重</td><td>消除主观偏差</td></tr>
+<tr><td><b>前沿完整性</b></td><td>单次运行只能得到帕累托前沿的一个点</td><td>MOEA/D的N个子问题同时进化，一次运行得到完整的帕累托前沿近似</td><td>信息量提升N倍</td></tr>
+<tr><td><b>约束处理</b></td><td>罚函数法，罚系数需调试</td><td>约束违反度作为独立排序维度，无需罚系数</td><td>免调参，更鲁棒</td></tr>
+<tr><td><b>评估效率</b></td><td>每评估一次需O(N²)</td><td>内嵌PAGCM，O(N log N)，在进化代数内可承受更多评估</td><td>同等计算时间内探索更多候选方案</td></tr>
+<tr><td><b>工程设计输出</b></td><td>仅给出数学最优解</td><td>Pareto前沿可视化+TOPSIS推荐+敏感度雷达图</td><td>工程师可直接决策</td></tr>
+</tbody></table></div>
+
+<h3>四、模型局限性 + 规避方案</h3>
+<div class="table-wrap">
+<table><thead><tr><th>局限</th><th>描述</th><th>规避方案</th></tr></thead>
+<tbody>
+<tr><td><b>L1: MOEA/D种群收敛</b></td><td>种群规模N_pop=100，代数G=200，总评估仅20000次</td><td>增大G至500代；使用HV(超体积)指标监控收敛；多启动验证</td></tr>
+<tr><td><b>L2: 力学性能的简化代理</b></td><td>用1−E/E₀(模量衰减)作为力学目标，未考虑界面脱粘、应力集中</td><td>可替换为有限元均质化代理模型；引入3%的安全裕度</td></tr>
+<tr><td><b>L3: 权重向量的均匀性</b></td><td>均匀权重假设各目标同等重要，实际中可能有偏好</td><td>引入交互式偏好区域——工程师可指定"成本权重≥0.3"等约束</td></tr>
+<tr><td><b>L4: 四目标帕累托可视化</b></td><td>四维帕累托前沿无法在二维平面上直观展示</td><td>使用平行坐标图+二维投影矩阵+TOPSIS综合得分排序</td></tr>
+</tbody></table></div>
+
+<h3>五、建模核心过程（六阶段）</h3>
+<div class="info-box">
+<p><b>阶段一·场景抽象：</b>"导电复合材料的多目标配方设计"→"带四个黑箱目标的约束多目标组合优化"：min F(X)=[f₁=1−P_conn, f₂=N/N_max, f₃=φ, f₄=1−E/E₀]，s.t. P_conn≥0.8, φ≤φ_max, N_min≤N≤N_max。</p>
+<p><b>阶段二·变量定义：</b>决策变量X=[{pᵢ}₁ᴺ, N, {rᵢ}₁ᴺ, strategy]；目标向量F(X)∈ℝ⁴；约束g₁=P_conn−0.8≥0, g₂=φ_max−φ≥0。MOEA/D参数：种群N_pop=100, 邻居T=20, CR=0.9, F=0.5, G_max=200。</p>
+<p><b>阶段三·模型构建：</b>① 权重向量生成：用Das-Dennis单纯形法在4维空间均匀采样100组λ⁽ᵏ⁾, Σλᵢ=1；② 切比雪夫分解：子问题k的目标为min g^{tch}(X|λ⁽ᵏ⁾,z*)=max_{j=1..4}{λⱼ⁽ᵏ⁾·|fⱼ(X)−z*ⱼ|}；③ 邻域交配：每个子问题从其T个最近邻(权重空间)中选择父代进行差分进化；④ PAGCM评估：计算每个后代的P_conn+f₂+f₃+f₄；⑤ TOPSIS决策：用熵权法从最优前沿中推荐方案。</p>
+<p><b>阶段四·数据适配：</b>以Q2的MESA最优解为MOEA/D初始种群种子，以Q3的敏感性排序结果设定搜索范围优先级（影响大的参数给定更大的变异步长）。四个目标的基准值从Q1-Q3结果中提取。</p>
+<p><b>阶段五·求解迭代：</b>初始化种群→For g=1:G_max: 对每个子问题{交配→变异→PAGCM评估→更新理想点z*→更新邻域解}→非支配排序→输出帕累托前沿。复杂度：O(G_max·N_pop·N·log N)≈200×100×535×log(535)≈1.1×10⁸次距离计算，约3-5分钟(N_pop=100, N=535)。</p>
+<p><b>阶段六·结果验证：</b>① HV(超体积)vs代数曲线验证收敛；② 与NSGA-II独立运行结果对比(IGD<0.01→一致)；③ Pareto前沿的物理一致性检验(f₂增加→f₁应改善)；④ TOPSIS推荐方案的PAGCM独立验证。</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SUMMARY TABLE -->
+<!-- ============================================================ -->
+<h2>四问汇总表</h2>
+<div class="table-wrap">
+<table><caption>表S-1 A题全部四问建模方案汇总</caption>
+<thead><tr><th>问题</th><th>问题描述</th><th>整体解题思路</th><th>建模模型</th><th>理由和创新点</th></tr></thead>
+<tbody>
+<tr><td><b>第一问</b></td><td>给定粒子坐标，判定三方向是否导电</td><td>粒子→图节点→环面距离→自适应等效半径→并查集→连通判定</td><td><b>PAGCM</b></td><td>周期边界拓扑嵌入+密度感知等效半径；比GPNM多检出11%连通通路</td></tr>
+<tr><td><b>第二问</b></td><td>最小化填料量实现导电</td><td>MaxEnt初始化+SA全局搜索+PAGCM评估→Pareto前沿</td><td><b>MESA-PAGCM</b><br>方向②跨领域迁移</td><td>信息论MaxEnt→材料初始化；统计物理SA→填料搜索；Q1→Q2方法复用</td></tr>
+<tr><td><b>第三问</b></td><td>量化粒径、形状、排布等因素对导电性的影响</td><td>多分散PAGCM扩展+Sobol'低差异序列采样+方差分解+三尺度分析</td><td><b>MS-PAGCM</b><br>方向①算法改进</td><td>单半径→粒径分布；OAT→Sobol'全局敏感性；平层分析→三尺度分层；可检测参数交互效应</td></tr>
+<tr><td><b>第四问</b></td><td>同时优化导电/成本/重量/力学四个目标，给出工程方案</td><td>MOEA/D切比雪夫分解+差分进化+PAGCM物理评估+TOPSIS+熵权决策</td><td><b>MOEA/D-PAGCM</b><br>方向③多模型融合</td><td>PAGCM+MOEA/D+TOPSIS三模型融合；均匀权重分解+免主观赋权；输出完整Pareto前沿+推荐方案</td></tr>
+</tbody></table></div>
+
+<hr style="margin:40px 0 20px;border:none;border-top:2px solid var(--border);">
+<p style="text-align:center;color:var(--text2);font-size:0.85rem;">
+<b>A题 全部四问 完整建模方案</b><br>
+第一问 PAGCM | 第二问 MESA-PAGCM | 第三问 MS-PAGCM | 第四问 MOEA/D-PAGCM<br>
+配套文件：<code>第三问_MS-PAGCM建模流程图.html</code> | <code>第四问_MOEA-D-PAGCM建模流程图.html</code>
+</p>
+
+</div>
+</body>
+</html>

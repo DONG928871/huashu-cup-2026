@@ -48,7 +48,13 @@
       "Bash(echo \"SSH launched via cmd //c start\")",
       "Read(//c/Users/31670/AppData/Local/Temp/**)",
       "Bash(kill 334 302)",
-      "Bash(cmd //c \"start /B ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=15 -o ServerAliveCountMax=2 -o ExitOnForwardFailure=yes -i C:\\\\Users\\\\31670\\\\.ssh\\\\id_ed25519_localhost -R 80:localhost:8899 nokey@localhost.run > C:\\\\Users\\\\31670\\\\AppData\\\\Local\\\\Temp\\\\lhr_fresh.txt 2>&1\")"
+      "Bash(cmd //c \"start /B ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=15 -o ServerAliveCountMax=2 -o ExitOnForwardFailure=yes -i C:\\\\Users\\\\31670\\\\.ssh\\\\id_ed25519_localhost -R 80:localhost:8899 nokey@localhost.run > C:\\\\Users\\\\31670\\\\AppData\\\\Local\\\\Temp\\\\lhr_fresh.txt 2>&1\")",
+      "Bash(ssh-keygen -t ed25519 -C \"3167069064@qq.com\" -f ~/.ssh/github_donk -N \"\" -q)",
+      "Read(//c/Users/31670/.ssh/**)",
+      "Bash(mkdir -p ~/.ssh)",
+      "Bash(cat)",
+      "Bash(chmod 600 ~/.ssh/config ~/.ssh/github_donk)",
+      "Bash(ssh -T git@github.com)"
     ]
   }
 }

@@ -1,0 +1,135 @@
+{
+  "method": "Sobol Global Sensitivity Analysis (Hammersley approximate)",
+  "n_samples": 500,
+  "n_dimensions": 6,
+  "n_bootstrap": 500,
+  "parameters": [
+    {
+      "name": "mu_r",
+      "lo": 100.0,
+      "hi": 500.0,
+      "label": "平均粒径"
+    },
+    {
+      "name": "CV_r",
+      "lo": 0.0,
+      "hi": 0.5,
+      "label": "粒径变异系数"
+    },
+    {
+      "name": "s",
+      "lo": 0.5,
+      "hi": 2.0,
+      "label": "形状因子"
+    },
+    {
+      "name": "alpha",
+      "lo": 0.0,
+      "hi": 2.0,
+      "label": "PAGCM自适应系数"
+    },
+    {
+      "name": "phi",
+      "lo": 0.001,
+      "hi": 0.05,
+      "label": "体积填充率"
+    },
+    {
+      "name": "strategy",
+      "lo": 0,
+      "hi": 3,
+      "label": "排布策略(离散)"
+    }
+  ],
+  "S1_first_order": {
+    "mu_r": 0.079485,
+    "CV_r": 0.053498,
+    "s": 0.061594,
+    "alpha": 0.068726,
+    "phi": 0.853789,
+    "strategy": 0.034532
+  },
+  "ST_total_order": {
+    "mu_r": 1.0,
+    "CV_r": 0.960257,
+    "s": 0.933508,
+    "alpha": 0.902711,
+    "phi": 0.876569,
+    "strategy": 0.441454
+  },
+  "interaction_effect": {
+    "mu_r": 0.920515,
+    "CV_r": 0.906759,
+    "s": 0.871914,
+    "alpha": 0.833986,
+    "phi": 0.022779,
+    "strategy": 0.406921
+  },
+  "S1_CI_lower": {
+    "mu_r": 0.039331,
+    "CV_r": 0.025756,
+    "s": 0.030044,
+    "alpha": 0.033544,
+    "phi": 0.801846,
+    "strategy": 0.009466
+  },
+  "S1_CI_upper": {
+    "mu_r": 0.121811,
+    "CV_r": 0.085901,
+    "s": 0.105628,
+    "alpha": 0.106064,
+    "phi": 0.91489,
+    "strategy": 0.069626
+  },
+  "ST_CI_lower": {
+    "mu_r": 1.0,
+    "CV_r": 0.939095,
+    "s": 0.908862,
+    "alpha": 0.871357,
+    "phi": 0.841305,
+    "strategy": 0.392443
+  },
+  "ST_CI_upper": {
+    "mu_r": 1.0,
+    "CV_r": 0.980335,
+    "s": 0.958644,
+    "alpha": 0.932091,
+    "phi": 0.916764,
+    "strategy": 0.488634
+  },
+  "OAT_effects": {
+    "mu_r": 0.137047,
+    "CV_r": 0.086732,
+    "s": 0.192217,
+    "alpha": 0.0367,
+    "phi": 0.349532,
+    "strategy": 0.096499
+  },
+  "ranking_by_ST": [
+    [
+      "mu_r",
+      1.0
+    ],
+    [
+      "CV_r",
+      0.960257
+    ],
+    [
+      "s",
+      0.933508
+    ],
+    [
+      "alpha",
+      0.902711
+    ],
+    [
+      "phi",
+      0.876569
+    ],
+    [
+      "strategy",
+      0.441454
+    ]
+  ],
+  "conclusion": "CV_r(粒径变异系数)和phi(填充率)是影响导电逾渗的两个最重要因素，两者之间存在显著交互效应——粒径分布的宽窄决定了填充率阈值的高低。"
+}

@@ -1,0 +1,99 @@
+{
+  "model": "MOEA/D-PAGCM",
+  "algorithm": "MOEA/D with Differential Evolution",
+  "reference": "Zhang & Li (2007), IEEE Trans. Evol. Comput. 11, 712",
+  "n_objectives": 4,
+  "objectives": [
+    "f1=1-P_conn",
+    "f2=N/N_max",
+    "f3=phi",
+    "f4=1-E/E0"
+  ],
+  "constraints": [
+    "P_conn >= 0.80",
+    "phi <= 0.10",
+    "N_min <= N <= N_max"
+  ],
+  "parameters": [
+    {
+      "name": "N_pop",
+      "value": 100,
+      "range": "[50, 200]",
+      "unit": "个",
+      "type": "MOEA/D参数",
+      "basis": "种群规模。100在Pareto前沿分辨率(更多子问题→更细前沿)与计算成本之间平衡。Zhang&Li(2007)推荐N_pop=100-300"
+    },
+    {
+      "name": "T_neighbor",
+      "value": 20,
+      "range": "[10, 50]",
+      "unit": "个",
+      "type": "MOEA/D参数",
+      "basis": "邻域大小。T=20保证每个子问题有足够的交配伙伴，同时避免全局随机交配导致收敛慢。标准取种群规模的10%-20%"
+    },
+    {
+      "name": "G_max",
+      "value": 200,
+      "range": "[100, 500]",
+      "unit": "代",
+      "type": "MOEA/D参数",
+      "basis": "最大进化代数。200代×100个体=20,000次PAGCM评估。Q1中单次评估约0.2s→总约67min(Q1/Q2已验证可接受)"
+    },
+    {
+      "name": "CR",
+      "value": 0.9,
+      "range": "[0.5, 1.0]",
+      "unit": "无量纲",
+      "type": "差分进化参数",
+      "basis": "交叉概率。CR=0.9→后代90%的维度来自变异向量(高探索)。Storn&Price(1997)推荐CR∈[0.8,1.0]"
+    },
+    {
+      "name": "F_mutation",
+      "value": 0.5,
+      "range": "[0.3, 0.9]",
+      "unit": "无量纲",
+      "type": "差分进化参数",
+      "basis": "缩放因子。F=0.5→中等步长，在探索与开发间平衡。标准推荐F∈[0.4,0.9]"
+    },
+    {
+      "name": "P_target_min",
+      "value": 0.8,
+      "range": "[0.70, 0.95]",
+      "unit": "无量纲",
+      "type": "工程约束",
+      "basis": "导电可靠性最低要求。取0.80(低于Q2的0.95)→因为Q4同时优化其他目标，放宽导电约束给其他目标留优化空间"
+    },
+    {
+      "name": "phi_max",
+      "value": 0.1,
+      "range": "[0.05, 0.20]",
+      "unit": "无量纲",
+      "type": "工程约束",
+      "basis": "最大填充率约束。φ_max=0.10→10vol%。超过此值填料开始显著降低基体力学性能(模量衰减>15%，Guth-Gold模型)"
+    },
+    {
+      "name": "E0_factor",
+      "value": 1.0,
+      "range": "[0.8, 1.2]",
+      "unit": "无量纲",
+      "type": "代理模型参数",
+      "basis": "E/E₀=1+Bφ。Guth-Gold模型中B=2.5(球形填料)。E₀为基础聚合物模量。当φ=0.1时E/E₀≈1.25，力学增强约25%"
+    },
+    {
+      "name": "Guth_B",
+      "value": 2.5,
+      "range": "[1.5, 4.0]",
+      "unit": "无量纲",
+      "type": "代理模型参数",
+      "basis": "Guth-Gold系数。B=2.5→球形粒子(理论值, Einstein 1906)。B=3.5-4.0→棒状填料。来源：Guth(1945), J. Appl. Phys. 16, 20"
+    },
+    {
+      "name": "weight_entropy",
+      "value": null,
+      "range": "动态计算",
+      "unit": "无量纲",
+      "type": "TOPSIS参数",
+      "basis": "熵权法从Pareto前沿的数据分布中动态计算权重，避免人为设定。Hⱼ=−k·Σ(p_ij·log p_ij)，wⱼ=(1−Hⱼ)/Σ(1−Hⱼ)"
+    }
+  ]
+}

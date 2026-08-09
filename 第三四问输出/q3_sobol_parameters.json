@@ -1,0 +1,83 @@
+{
+  "n_samples": 2000,
+  "n_dimensions": 6,
+  "sequence_type": "Hammersley (Sobol近似)",
+  "parameters": [
+    {
+      "name": "mu_r",
+      "label": "平均粒径",
+      "lower": 100.0,
+      "upper": 500.0,
+      "unit": "题目坐标系单位",
+      "type": "微观尺度-连续",
+      "basis": "基准r₀=250，扫描±60%范围。100对应超细填料(纳米级)，500对应粗填料(微米级)",
+      "default": 250.0
+    },
+    {
+      "name": "CV_r",
+      "label": "粒径变异系数",
+      "lower": 0.0,
+      "upper": 0.5,
+      "unit": "无量纲",
+      "type": "微观尺度-连续",
+      "basis": "CV=0→单分散(等径)；CV=0.5→高度多分散(最大/最小粒径比≈4:1)。典型工业炭黑CV≈0.2-0.4",
+      "default": 0.0
+    },
+    {
+      "name": "s",
+      "label": "形状因子",
+      "lower": 0.5,
+      "upper": 2.0,
+      "unit": "无量纲",
+      "type": "微观尺度-连续",
+      "basis": "s=1→球体；s>1→棒状(等效径面积放大)；s<1→片状(面积缩小)。碳纳米管s≈1.5-3.0(取决于长径比)，石墨烯s≈0.3-0.7",
+      "default": 1.0
+    },
+    {
+      "name": "alpha",
+      "label": "PAGCM自适应系数",
+      "lower": 0.0,
+      "upper": 2.0,
+      "unit": "无量纲",
+      "type": "介观尺度-连续",
+      "basis": "与Q1/Q2一致。α=0→退化为固定半径GPNM；α=2→强自适应。Q1基准α=0.5",
+      "default": 0.5
+    },
+    {
+      "name": "phi",
+      "label": "体积填充率",
+      "lower": 0.001,
+      "upper": 0.05,
+      "unit": "无量纲",
+      "type": "宏观尺度-连续",
+      "basis": "φ=0.001→远低于逾渗；φ=0.05→远超逾渗(φ_c≈0.29×球体体积比)。Q1中组1≈0.0008,组3≈0.035",
+      "default": 0.01
+    },
+    {
+      "name": "strategy",
+      "label": "排布策略编码",
+      "lower": 0,
+      "upper": 3,
+      "unit": "离散类别",
+      "type": "介观尺度-离散",
+      "basis": "0=随机均匀(random)；1=链状排列(chain,模拟剪切诱导取向)；2=层状排列(layered)；3=MaxEnt均匀(maxent)。参考文献：Balberg(1984)对链状逾渗的讨论",
+      "default": 0
+    }
+  ],
+  "sample_preview_first": [
+    300.0,
+    0.1667,
+    0.8,
+    0.2857,
+    0.0055,
+    0
+  ],
+  "sample_preview_last": [
+    137.1094,
+    0.1738,
+    0.5077,
+    1.8326,
+    0.0466,
+    3
+  ]
+}

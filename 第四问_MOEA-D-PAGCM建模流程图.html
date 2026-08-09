@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q4 MOEA/D-PAGCM 流程图</title>
+<style>
+:root{--c-blue:#2a78d6;--c-orange:#eb6834;--c-aqua:#1baf7a;--c-violet:#4a3aa7;--c-red:#e34948;--c-teal:#0d7377;--c-yellow:#eda100;--surface:#fcfcfb;--text:#0b0b0b;--text2:#52514e;--muted:#898781;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:#f9f9f7;color:var(--text);display:flex;justify-content:center;padding:40px 20px;}
+.container{max-width:920px;width:100%;}
+.title-block{text-align:center;margin-bottom:30px;}
+.title-block h1{font-size:1.4rem;font-weight:800;margin-bottom:4px;}
+.title-block .sub{font-size:0.85rem;color:var(--text2);}
+.title-block .tag{display:inline-block;background:var(--c-red);color:#fff;padding:4px 16px;border-radius:20px;font-size:0.78rem;font-weight:600;margin-top:8px;}
+.legend{display:flex;justify-content:center;gap:20px;margin-bottom:28px;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--text2);}
+.legend-dot{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;}
+.module{width:520px;padding:14px 22px;border-radius:10px;background:#fff;border:2px solid transparent;box-shadow:0 1px 3px rgba(0,0,0,0.06);text-align:center;transition:transform 0.15s;}
+.module:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,0.10);}
+.module .step-num{display:inline-block;width:24px;height:24px;line-height:24px;border-radius:50%;font-size:0.72rem;font-weight:700;text-align:center;color:#fff;margin-bottom:4px;}
+.module .module-title{font-size:0.95rem;font-weight:700;margin-bottom:2px;}
+.module .module-desc{font-size:0.76rem;color:var(--text2);line-height:1.5;}
+.module.p-init{border-color:var(--c-blue);} .module.p-init .step-num{background:var(--c-blue);}
+.module.p-evolve{border-color:var(--c-red);} .module.p-evolve .step-num{background:var(--c-red);}
+.module.p-eval{border-color:var(--c-aqua);} .module.p-eval .step-num{background:var(--c-aqua);}
+.module.p-decide{border-color:var(--c-violet);} .module.p-decide .step-num{background:var(--c-violet);}
+.module.io-box{width:280px;padding:10px 18px;border-radius:20px;background:#52514e;border:none;}
+.module.io-box .step-num{background:rgba(255,255,255,0.25);}
+.module.io-box .module-title{color:#fff;font-size:0.85rem;}
+.module.io-box .module-desc{color:rgba(255,255,255,0.8);}
+.arrow{display:flex;flex-direction:column;align-items:center;padding:3px 0;}
+.arrow-line{width:2px;height:24px;background:var(--muted);border-radius:1px;}
+.arrow-head{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--muted);}
+.branch-row{display:flex;gap:16px;align-items:flex-start;}
+.branch-row .module{width:252px;}
+.phase-divider{width:520px;height:1px;background:#e1e0d9;margin:4px 0 8px;position:relative;}
+.phase-divider .phase-tag{position:absolute;left:50%;top:-8px;transform:translateX(-50%);background:#f9f9f7;padding:0 10px;font-size:0.68rem;font-weight:600;letter-spacing:0.05em;color:var(--muted);}
+.loop-box{background:#fef9e7;border:2px dashed var(--c-yellow);border-radius:10px;padding:6px 14px;margin:4px 0;font-size:0.72rem;color:var(--text2);text-align:center;}
+.footer-note{text-align:center;margin-top:28px;font-size:0.72rem;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="title-block">
+  <h1>第四问 · MOEA/D-PAGCM 建模流程图</h1>
+  <div class="sub">多目标进化分解周期自适应图连通工程设计模型 | 创新方向③：多模型融合组合创新</div>
+  <span class="tag">三模型融合：PAGCM + MOEA/D + TOPSIS</span>
+</div>
+<div class="legend">
+  <div class="legend-item"><span class="legend-dot" style="background:#2a78d6"></span>初始化</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#e34948"></span>进化搜索</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#1baf7a"></span>物理评估</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#4a3aa7"></span>决策输出</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#eda100;border:1px dashed #c98500;width:9px;height:9px"></span>迭代循环</div>
+</div>
+
+<div class="flow">
+  <div class="module io-box"><div class="step-num">▶</div><div class="module-title">开始：定义四目标优化问题</div><div class="module-desc">min F(X)=[1-P_conn, N/N_max, φ, 1-E/E₀] s.t. P_conn≥0.8</div></div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+  <div class="phase-divider"><span class="phase-tag">初 始 化（融合一：PAGCM评估器）</span></div>
+
+  <div class="branch-row">
+    <div class="module p-init"><div class="step-num">1</div><div class="module-title">种群初始化</div><div class="module-desc">以Q2 MESA最优解为种子<br>生成N_pop=100个个体<br>每个个体X={pᵢ},N,{rᵢ},strategy</div></div>
+    <div class="module p-init"><div class="step-num">2</div><div class="module-title">权重向量生成</div><div class="module-desc">Das-Dennis单纯形法<br>在4维空间均匀采样<br>100组权重λ⁽ᵏ⁾, Σλᵢ=1</div></div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="module p-init"><div class="step-num">3</div><div class="module-title">PAGCM初次评估（融合一）</div><div class="module-desc">对100个初始个体→PAGCM→[P_conn, N, φ] + 力学代理模型→E/E₀ → 四目标函数值F(X)</div></div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+  <div class="phase-divider"><span class="phase-tag">进 化 搜 索（融合二：MOEA/D）</span></div>
+
+  <div class="module p-evolve"><div class="step-num">4</div><div class="module-title">MOEA/D主循环：切比雪夫分解 + 邻域差分进化</div><div class="module-desc">For 每个子问题k(权重λ⁽ᵏ⁾)并行：从T=20邻居中选父代→差分进化(CR=0.9,F=0.5)<br>→ 生成后代→PAGCM评估→更新理想点z*→更新邻域解(若gᵗᶜʰ更优)</div></div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="loop-box">↻ 迭代G_max=200代，每代100次PAGCM评估，总计20,000次评估 ≈ 3-5分钟</div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="module p-evolve"><div class="step-num">5</div><div class="module-title">非支配排序 + 帕累托前沿提取</div><div class="module-desc">从20000个评估解中提取非支配集→四维Pareto前沿近似<br>HV(超体积)指标监控收敛：HV不再增长→进化停止</div></div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+  <div class="phase-divider"><span class="phase-tag">决 策 输 出（融合三：TOPSIS）</span></div>
+
+  <div class="branch-row">
+    <div class="module p-decide"><div class="step-num">6a</div><div class="module-title">熵权法客观赋权</div><div class="module-desc">从Pareto前沿的数据分布<br>中计算各目标的熵值<br>wⱼ=(1−Hⱼ)/Σ(1−Hⱼ)</div></div>
+    <div class="module p-decide"><div class="step-num">6b</div><div class="module-title">TOPSIS综合排序</div><div class="module-desc">计算各方案到理想解/负理想<br>解的距离D⁺/D⁻→C=D⁻/(D⁺+D⁻)<br>输出C值最高的方案</div></div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="module p-decide"><div class="step-num">7</div><div class="module-title">可视化输出：平行坐标图 + 二维投影 + 雷达图</div><div class="module-desc">四维Pareto前沿的平行坐标图（每线=一个最优方案）<br>6组二维投影散点矩阵（fᵢ vs fⱼ） + TOPSIS推荐方案高亮标注</div></div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="module io-box"><div class="step-num">✓</div><div class="module-title">输出：帕累托前沿 + TOPSIS推荐方案 + 工程决策建议</div><div class="module-desc">"推荐方案：N=580粒子，P_conn=0.97，成本增加8%，重量增加5%，模量保持92%"</div></div>
+</div>
+<div class="footer-note">蓝=初始化 | 红=进化搜索(MOEA/D) | 绿=物理评估(PAGCM) | 紫=决策输出(TOPSIS) | 黄虚线框=迭代循环</div>
+</div>
+</body>
+</html>
